@@ -1,0 +1,20 @@
+# Noita Savior Requirements
+# This project uses only Python standard library modules
+
+# Core dependencies (all part of Python standard library)
+# tkinter - GUI framework (included with Python)
+# shutil - File operations (included with Python)
+# os - Operating system interface (included with Python)
+# json - JSON data handling (included with Python)
+# datetime - Date and time handling (included with Python)
+
+# External dependencies
+psutil>=5.8.0  # Process detection for game protection
+
+# Optional: For development/testing
+# pytest>=6.0.0
+# black>=21.0.0
+# flake8>=3.8.0
+
+# For building executables
+pyinstaller>=5.0.0
