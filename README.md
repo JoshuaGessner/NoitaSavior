@@ -1,6 +1,6 @@
 # Noita Savior
 
-A save manager for the game Noita that allows you to create, load, and manage multiple save states with automatic backup functionality.
+A save manager for the game Noita that allows you to create, load, and manage multiple save states with automatic backup functionality. (MAKE SURE YOU DISABLE YOUR STEAM CLOUD SAVES FOR NOITA IN ORDER FOR THIS TO WORK IF USING STEAM VERSION)
 
 ## Quick Start
 
