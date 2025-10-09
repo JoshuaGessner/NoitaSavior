@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 import shutil
+import sys
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 import os
@@ -30,8 +31,17 @@ except ImportError:
 
 # Constants
 NOITA_SAVE_PATH = os.path.expandvars(r"%AppData%\LocalLow\Nolla_Games_Noita\save00")
-BACKUP_DIR = os.path.join(os.path.dirname(__file__), "backups")
-SLOTS_FILE = os.path.join(os.path.dirname(__file__), "slots.json")
+
+# Use proper paths that work both in development and as executable
+if getattr(sys, 'frozen', False):
+    # Running as executable
+    BASE_DIR = os.path.dirname(sys.executable)
+else:
+    # Running as script
+    BASE_DIR = os.path.dirname(__file__)
+
+BACKUP_DIR = os.path.join(BASE_DIR, "backups")
+SLOTS_FILE = os.path.join(BASE_DIR, "slots.json")
 
 # Alternative save paths to check
 ALTERNATIVE_PATHS = [
@@ -59,10 +69,18 @@ class NoitaSaveManager:
         # Load slot data
         self.slots_data = self.load_slots_data()
         
+        # Debug: Print file paths
+        print(f"Base directory: {BASE_DIR}")
+        print(f"Backup directory: {BACKUP_DIR}")
+        print(f"Slots file: {SLOTS_FILE}")
+        
         self.setup_ui()
         
         # Update initial status
         self.update_initial_status()
+        
+        # Set up cleanup on window close
+        self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
     
     def find_noita_save_folder(self):
         """Find the correct Noita save folder by checking multiple possible paths"""
@@ -151,10 +169,18 @@ class NoitaSaveManager:
     def save_slots_data(self):
         """Save slot metadata to JSON file"""
         try:
+            # Ensure the directory exists
+            os.makedirs(os.path.dirname(SLOTS_FILE), exist_ok=True)
+            
             with open(SLOTS_FILE, 'w') as f:
                 json.dump(self.slots_data, f, indent=2)
+            
+            print(f"Slot data saved to: {SLOTS_FILE}")
+            return True
         except Exception as e:
+            print(f"Error saving slot data: {e}")
             self.update_status(f"Error saving slot data: {e}")
+            return False
     
     def backup_current_save(self):
         """Backup the current save folder"""
@@ -376,6 +402,18 @@ class NoitaSaveManager:
         """Update the status bar"""
         self.status_var.set(message)
         self.root.update_idletasks()
+    
+    def on_closing(self):
+        """Handle application closing - save data before exit"""
+        try:
+            # Save slot data before closing
+            self.save_slots_data()
+            print("Slot data saved successfully")
+        except Exception as e:
+            print(f"Error saving slot data on exit: {e}")
+        
+        # Destroy the window
+        self.root.destroy()
     
     def run(self):
         """Start the application"""
