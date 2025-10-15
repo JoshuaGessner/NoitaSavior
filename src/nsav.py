@@ -16,7 +16,7 @@
 import shutil
 import sys
 import tkinter as tk
-from tkinter import filedialog, messagebox, ttk, simpledialog
+from tkinter import filedialog, messagebox, ttk, simpledialog, PhotoImage
 import os
 from datetime import datetime
 import json
@@ -83,6 +83,7 @@ class ToolTip:
 class NoitaSaveManager:
     def __init__(self):
         self.root = tk.Tk()
+        self.root.iconbitmap("icon.ico")
         self.root.title("Noita Savior")
         self.root.geometry("600x450")
         self.root.resizable(True, True)
@@ -98,6 +99,9 @@ class NoitaSaveManager:
         # Load slot data
         self.slots_data = self.load_slots_data()
         self.slot_tooltips = []          # <-- new list to hold tooltip objects
+
+        # Store references to rename buttons
+        self.rename_buttons = []
         
         # Debug: Print file paths
         print(f"Base directory: {BASE_DIR}")
@@ -406,6 +410,8 @@ class NoitaSaveManager:
             rename_btn = ttk.Button(btn_frame, text="Rename",
                                    command=lambda i=i: self.rename_slot(i))
             rename_btn.grid(row=3, column=0, pady=2, sticky=(tk.W, tk.E))
+            # Keep a reference to this button
+            self.rename_buttons.append(rename_btn)
             
             # Update slot display
             self.update_slot_display(i)
@@ -452,9 +458,13 @@ class NoitaSaveManager:
             if date:
                 tooltip_text += f"\n{date}"
             self.slot_tooltips[slot_num].text = tooltip_text
+            # Enable rename button when slot has data
+            self.rename_buttons[slot_num].config(state='normal')
         else:
             self.slot_labels[slot_num].config(text="Empty")
             self.slot_tooltips[slot_num].text = ""
+            # Disable rename button when slot is empty
+            self.rename_buttons[slot_num].config(state='disabled')
     
     def update_initial_status(self):
         """Update initial status on startup"""
