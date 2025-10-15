@@ -57,6 +57,18 @@ def main():
     try:
         subprocess.check_call(cmd)
         print("✓ Build completed successfully!")
+
+        # Copy icon to dist folder for convenience
+        icon_path = Path("icon.ico")
+        if icon_path.exists():
+            dist_path = Path("dist")
+            try:
+                shutil.copy(icon_path, dist_path / icon_path.name)
+                print(f"✓ Icon copied to dist folder: {dist_path / icon_path.name}")
+            except Exception as e:
+                print(f"⚠ Failed to copy icon: {e}")
+        else:
+            print("⚠ icon.ico not found, skipping copy.")
         
         # Check if executable was created
         exe_path = Path("dist/NoitaSavior.exe")
